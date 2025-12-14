@@ -100,6 +100,8 @@ vim.g.have_nerd_font = false
 
 -- Make line numbers default
 vim.o.number = true
+vim.o.relativenumber = false
+
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.o.relativenumber = true
@@ -159,7 +161,7 @@ vim.o.inccommand = 'split'
 vim.o.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.o.scrolloff = 10
+vim.o.scrolloff = 15
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -172,6 +174,9 @@ vim.o.confirm = true
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Escape using jj
+vim.keymap.set('i', 'jj', '<Esc>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -244,10 +249,45 @@ rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+
+--clangd setup
+vim.lsp.config('clangd', {
+  cmd = { '/opt/homebrew/opt/llvm/bin/clangd' },
+  filetypes = { 'c', 'cpp' },
+  root_markers = {
+    'compile_commands.json',
+    'compile_flags.txt',
+    '.git',
+  },
+})
+
+vim.lsp.enable 'clangd'
+
+--end of cland
+
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+
 -- NOTE: Here is where you install your plugins.
+
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 2
+vim.opt.expandtab = true
+
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  'christoomey/vim-tmux-navigator',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -255,7 +295,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
-
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
   --    {
@@ -282,6 +321,17 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+  {
+    'echasnovski/mini.files',
+    version = '*',
+    config = function()
+      require('mini.files').setup()
+
+      vim.keymap.set('n', '<leader>e', function()
+        require('mini.files').open()
+      end, { desc = 'Explorer (mini.files)' })
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -718,7 +768,8 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
+      -- clang
+      -- end of clang
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
