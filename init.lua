@@ -265,17 +265,20 @@ vim.lsp.enable 'clangd'
 
 --end of cland
 
---
---
---
---
---
---
---
---
---
---
---
+-- jdtls setup
+vim.lsp.config('jdtls', {
+  cmd = { 'jdtls' },
+  filetypes = { 'java' },
+  root_markers = {
+    'pom.xml',
+    'build.gradle',
+    'settings.gradle',
+    '.git',
+  },
+})
+
+vim.lsp.enable 'jdtls'
+-- end of jdtls
 
 -- NOTE: Here is where you install your plugins.
 
